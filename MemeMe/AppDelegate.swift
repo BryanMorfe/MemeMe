@@ -10,12 +10,62 @@ import UIKit
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
+    
+    // MARK: Properties
 
     var window: UIWindow?
-
+    
+    var memeEditorViewController: MemeEditorViewController?
+    var activeViewController: UIViewController?
+    
+    var appTheme: AppTheme!
+    var preferredFont: UIFont!
+    
+    var memes = [Meme]()
+    
+    // MARK: Constants Struct
+    
+    struct UserDefaultsKeys {
+        static let hasLaunched = "HasLaunched"
+        static let preferredFont = "PreferredFont"
+        static let appTheme = "DarkTheme"
+    }
+    
+    // MARK: Methods
+    
+    func loadAppTheme() {
+        // Confession: I have taken a peak at the persistance and core data course
+        
+        // I will just make the settings persist through app lauches because it's more practical
+        if let _ = UserDefaults.standard.value(forKey: AppDelegate.UserDefaultsKeys.hasLaunched) as? Bool {
+            
+            if let fontName = UserDefaults.standard.value(forKey: AppDelegate.UserDefaultsKeys.preferredFont) as? String {
+                preferredFont = UIFont(name: fontName, size: 40)!
+            }
+            
+            if let darkTheme = UserDefaults.standard.value(forKey: AppDelegate.UserDefaultsKeys.appTheme) as? Bool {
+                // If it's true it's dark, otherwise it's light
+                darkTheme ? (appTheme = .dark) : (appTheme = .light)
+            }
+        } else {
+            appTheme = .light
+            preferredFont = UIFont(name: "Impact", size: 40)!
+            UserDefaults.standard.set(true, forKey: AppDelegate.UserDefaultsKeys.hasLaunched)
+            UserDefaults.standard.set(false, forKey: AppDelegate.UserDefaultsKeys.appTheme)
+            UserDefaults.standard.set("Impact", forKey: AppDelegate.UserDefaultsKeys.preferredFont)
+        }
+        
+    }
+    
+    func saveSettings() {
+        let darkTheme = appTheme == .dark ? true : false
+        let fontName = preferredFont.fontName
+        UserDefaults.standard.set(darkTheme, forKey: AppDelegate.UserDefaultsKeys.appTheme)
+        UserDefaults.standard.set(fontName, forKey: AppDelegate.UserDefaultsKeys.preferredFont)
+    }
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-        // Override point for customization after application launch.
+        loadAppTheme()
         return true
     }
 
@@ -27,6 +77,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationDidEnterBackground(_ application: UIApplication) {
         // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
         // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
+        saveSettings()
     }
 
     func applicationWillEnterForeground(_ application: UIApplication) {
