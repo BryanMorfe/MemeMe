@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # MemeMe 
 
 #### Brief
@@ -106,6 +105,3 @@ This project is an iOS app required to graduate as an iOS Developer from Udacity
 ## Notes
 
 No notes at this time.
-=======
-# MemeMe
->>>>>>> e03998c0b9a9b39693d5e58638ae5b1b77dd820f
